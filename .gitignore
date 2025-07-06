@@ -88,3 +88,4 @@ rebuild-v20.sh
 # n8n-docs repo (cloned locally)
 ../n8n-docs/
 n8n-docs/
+data/nodes.db
