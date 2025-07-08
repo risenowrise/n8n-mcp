@@ -89,3 +89,8 @@ rebuild-v20.sh
 ../n8n-docs/
 n8n-docs/
 data/nodes.db
+
+*.py[cod]
+.venv/
+__pycache__/
+__tmp/
