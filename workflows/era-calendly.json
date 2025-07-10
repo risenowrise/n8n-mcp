@@ -1,0 +1,469 @@
+{
+  "createdAt": "2025-07-10T04:10:21.690Z",
+  "updatedAt": "2025-07-10T18:22:05.000Z",
+  "id": "kPU6epvHwbstmyab",
+  "name": "ERA Calendly booked",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "scope": "organization",
+        "events": [
+          "invitee.created"
+        ]
+      },
+      "type": "n8n-nodes-base.calendlyTrigger",
+      "typeVersion": 1,
+      "position": [
+        -520,
+        0
+      ],
+      "id": "bf712905-f708-4db3-9f32-83a1419b8a60",
+      "name": "Calendly - added or cancelled",
+      "webhookId": "d609c93b-ec4c-4f41-960b-21b185a585b8",
+      "credentials": {
+        "calendlyOAuth2Api": {
+          "id": "A43RaiznMOIhfanB",
+          "name": "Calendly account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "88ac2dda-1237-45fa-8d3c-d32ac40538f1",
+              "leftValue": "={{ $json.payload.scheduled_event.event_type }}",
+              "rightValue": "https://api.calendly.com/event_types/8178c74a-5193-4388-b4a7-847af0baab16",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -300,
+        0
+      ],
+      "id": "f2d13ca5-759d-4e66-9928-3c1c458e7f32",
+      "name": "is Discovery Call (Level1?)"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "67fd889b-5b30-4a4d-a8cf-0f9dfb9f9852",
+              "leftValue": "={{ $json.event }}",
+              "rightValue": "invitee.created",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        240,
+        -200
+      ],
+      "id": "2f96909a-2d2b-41ae-b4aa-a4e26076e5ff",
+      "name": "New Schedule (invitee.created)"
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "guildId": {
+          "__rl": true,
+          "value": "1374418664572452914",
+          "mode": "list",
+          "cachedResultName": "Emotional Release Academy",
+          "cachedResultUrl": "https://discord.com/channels/1374418664572452914"
+        },
+        "channelId": {
+          "__rl": true,
+          "value": "https://discord.com/channels/1374418664572452914/1392723240501116929",
+          "mode": "url"
+        },
+        "content": "=🗓️ {{ $json.payload.scheduled_event.name }} scheduled with {{ $json.payload.scheduled_event.event_memberships[0].user_name }} for $DATE. ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        480,
+        -280
+      ],
+      "id": "6ee5d8a2-ce05-4938-a56f-75fe9a1426c2",
+      "name": "#sales-leads (Live Update)",
+      "webhookId": "f438f0ed-09ad-46dc-838a-f267bf555a9d",
+      "retryOnFail": true,
+      "credentials": {
+        "discordBotApi": {
+          "id": "8WfDktIMYS70eX1a",
+          "name": "Discord Bot account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $json.payload.scheduled_event.start_time }}",
+        "format": "MMMM dd yyyy",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        -100
+      ],
+      "id": "126a8ccc-fd2c-440e-9e2c-5317f58f8e38",
+      "name": "Date & Time"
+    }
+  ],
+  "connections": {
+    "Calendly - added or cancelled": {
+      "main": [
+        [
+          {
+            "node": "is Discovery Call (Level1?)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "is Discovery Call (Level1?)": {
+      "main": [
+        [
+          {
+            "node": "Date & Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "New Schedule (invitee.created)": {
+      "main": [
+        [
+          {
+            "node": "#sales-leads (Live Update)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "main": [
+        [
+          {
+            "node": "New Schedule (invitee.created)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Calendly - added or cancelled": [
+      {
+        "json": {
+          "created_at": "2025-07-10T16:10:43.000000Z",
+          "created_by": "https://api.calendly.com/users/ECGAS6O743MZENFR",
+          "event": "invitee.created",
+          "payload": {
+            "cancel_url": "https://calendly.com/cancellations/9bdc143a-a401-452e-96a5-00dff8a1d7cf",
+            "created_at": "2025-07-10T16:10:37.751650Z",
+            "email": "kontakt@finnr.de",
+            "event": "https://api.calendly.com/scheduled_events/ee838ca9-6bb2-43c9-a5c5-687856011fe4",
+            "first_name": null,
+            "invitee_scheduled_by": null,
+            "last_name": null,
+            "name": "TESTFINN",
+            "new_invitee": null,
+            "no_show": null,
+            "old_invitee": null,
+            "payment": null,
+            "questions_and_answers": [
+              {
+                "answer": "portugiesische luft 🌬️",
+                "position": 0,
+                "question": "Please share anything that will help prepare for our meeting."
+              }
+            ],
+            "reconfirmation": null,
+            "reschedule_url": "https://calendly.com/reschedulings/9bdc143a-a401-452e-96a5-00dff8a1d7cf",
+            "rescheduled": false,
+            "routing_form_submission": null,
+            "scheduled_event": {
+              "created_at": "2025-07-10T16:10:37.720540Z",
+              "end_time": "2025-07-17T08:00:00.000000Z",
+              "event_guests": [],
+              "event_memberships": [
+                {
+                  "user": "https://api.calendly.com/users/ded5116d-5508-4a8f-a9d6-c65cc6a0a950",
+                  "user_email": "info.hugoliveira@gmail.com",
+                  "user_name": "Hugo Weisser de Oliveira"
+                }
+              ],
+              "event_type": "https://api.calendly.com/event_types/8178c74a-5193-4388-b4a7-847af0baab16",
+              "invitees_counter": {
+                "total": 1,
+                "active": 1,
+                "limit": 1
+              },
+              "location": {
+                "data": {
+                  "id": 93751933743,
+                  "settings": {
+                    "global_dial_in_numbers": [
+                      {
+                        "country_name": "US",
+                        "city": "Chicago",
+                        "number": "+1 312 626 6799",
+                        "type": "toll",
+                        "country": "US"
+                      },
+                      {
+                        "country_name": "US",
+                        "number": "+1 646 931 3860",
+                        "type": "toll",
+                        "country": "US"
+                      },
+                      {
+                        "country_name": "US",
+                        "city": "New York",
+                        "number": "+1 929 205 6099",
+                        "type": "toll",
+                        "country": "US"
+                      },
+                      {
+                        "country_name": "US",
+                        "city": "Washington DC",
+                        "number": "+1 301 715 8592",
+                        "type": "toll",
+                        "country": "US"
+                      },
+                      {
+                        "country_name": "US",
+                        "number": "+1 305 224 1968",
+                        "type": "toll",
+                        "country": "US"
+                      },
+                      {
+                        "country_name": "US",
+                        "number": "+1 309 205 3325",
+                        "type": "toll",
+                        "country": "US"
+                      },
+                      {
+                        "country_name": "US",
+                        "number": "+1 507 473 4847",
+                        "type": "toll",
+                        "country": "US"
+                      },
+                      {
+                        "country_name": "US",
+                        "number": "+1 564 217 2000",
+                        "type": "toll",
+                        "country": "US"
+                      },
+                      {
+                        "country_name": "US",
+                        "number": "+1 669 444 9171",
+                        "type": "toll",
+                        "country": "US"
+                      },
+                      {
+                        "country_name": "US",
+                        "city": "San Jose",
+                        "number": "+1 669 900 6833",
+                        "type": "toll",
+                        "country": "US"
+                      },
+                      {
+                        "country_name": "US",
+                        "number": "+1 689 278 1000",
+                        "type": "toll",
+                        "country": "US"
+                      },
+                      {
+                        "country_name": "US",
+                        "number": "+1 719 359 4580",
+                        "type": "toll",
+                        "country": "US"
+                      },
+                      {
+                        "country_name": "US",
+                        "number": "+1 253 205 0468",
+                        "type": "toll",
+                        "country": "US"
+                      },
+                      {
+                        "country_name": "US",
+                        "city": "Tacoma",
+                        "number": "+1 253 215 8782",
+                        "type": "toll",
+                        "country": "US"
+                      },
+                      {
+                        "country_name": "US",
+                        "city": "Houston",
+                        "number": "+1 346 248 7799",
+                        "type": "toll",
+                        "country": "US"
+                      },
+                      {
+                        "country_name": "US",
+                        "number": "+1 360 209 5623",
+                        "type": "toll",
+                        "country": "US"
+                      },
+                      {
+                        "country_name": "US",
+                        "number": "+1 386 347 5053",
+                        "type": "toll",
+                        "country": "US"
+                      }
+                    ]
+                  },
+                  "extra": {
+                    "intl_numbers_url": "https://zoom.us/u/adfQyVpUSb"
+                  },
+                  "password": "797710"
+                },
+                "join_url": "https://zoom.us/j/93751933743?pwd=EX8eh7k4bDu16qTeNAXa00cDmcNKdZ.1",
+                "status": "pushed",
+                "type": "zoom"
+              },
+              "meeting_notes_html": null,
+              "meeting_notes_plain": null,
+              "name": "ERA Training Intake Call",
+              "start_time": "2025-07-17T07:30:00.000000Z",
+              "status": "active",
+              "updated_at": "2025-07-10T16:10:42.236164Z",
+              "uri": "https://api.calendly.com/scheduled_events/ee838ca9-6bb2-43c9-a5c5-687856011fe4"
+            },
+            "scheduling_method": null,
+            "status": "active",
+            "text_reminder_number": null,
+            "timezone": "Europe/London",
+            "tracking": {
+              "utm_campaign": null,
+              "utm_source": null,
+              "utm_medium": null,
+              "utm_content": null,
+              "utm_term": null,
+              "salesforce_uuid": null
+            },
+            "updated_at": "2025-07-10T16:10:37.751650Z",
+            "uri": "https://api.calendly.com/scheduled_events/ee838ca9-6bb2-43c9-a5c5-687856011fe4/invitees/9bdc143a-a401-452e-96a5-00dff8a1d7cf"
+          }
+        }
+      }
+    ]
+  },
+  "versionId": "63c15242-4639-466a-8d1d-84b01a110246",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-07-10T04:10:21.695Z",
+      "updatedAt": "2025-07-10T04:10:21.695Z",
+      "role": "workflow:owner",
+      "workflowId": "kPU6epvHwbstmyab",
+      "projectId": "aqaRGjIjpTFhN1Y6",
+      "project": {
+        "createdAt": "2025-05-10T22:48:43.383Z",
+        "updatedAt": "2025-05-10T22:50:26.259Z",
+        "id": "aqaRGjIjpTFhN1Y6",
+        "name": "Finn Roessner <finn@risenowrise.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "createdAt": "2025-05-10T22:48:43.384Z",
+            "updatedAt": "2025-05-10T22:48:43.384Z",
+            "role": "project:personalOwner",
+            "userId": "4834a391-91bd-414e-beb1-9017947cd646",
+            "projectId": "aqaRGjIjpTFhN1Y6",
+            "user": {
+              "createdAt": "2025-05-10T22:48:42.936Z",
+              "updatedAt": "2025-07-10T12:40:37.000Z",
+              "id": "4834a391-91bd-414e-beb1-9017947cd646",
+              "email": "finn@risenowrise.com",
+              "firstName": "Finn",
+              "lastName": "Roessner",
+              "personalizationAnswers": {
+                "version": "v4",
+                "personalization_survey_submitted_at": "2025-05-10T22:50:28.812Z",
+                "personalization_survey_n8n_version": "1.91.3"
+              },
+              "settings": {
+                "userActivated": false
+              },
+              "role": "global:owner",
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2025-07-10",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-07-10T18:21:59.596Z",
+      "updatedAt": "2025-07-10T18:21:59.596Z",
+      "id": "wDN4PdCROwnZrBPi",
+      "name": "ERA"
+    },
+    {
+      "createdAt": "2025-07-10T18:22:03.897Z",
+      "updatedAt": "2025-07-10T18:22:03.897Z",
+      "id": "zEe0xRMR07tLotMu",
+      "name": "Sales"
+    }
+  ]
+}
